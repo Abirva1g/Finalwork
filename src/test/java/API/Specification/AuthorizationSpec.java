@@ -1,5 +1,6 @@
 package API.Specification;
 
+import io.restassured.RestAssured;
 import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.builder.ResponseSpecBuilder;
 import io.restassured.http.ContentType;
@@ -7,7 +8,6 @@ import io.restassured.path.json.JsonPath;
 import io.restassured.specification.RequestSpecification;
 import io.restassured.specification.ResponseSpecification;
 import java.util.Map;
-
 import static API.Properties.*;
 import static io.restassured.RestAssured.given;
 
@@ -41,7 +41,7 @@ public class AuthorizationSpec {
     }
 
     public String getToken(Map<String, String> paramsLogin) {
-        String response = given().log().all()
+        String response = RestAssured.given().log().all()
                 .formParams(paramsLogin)
                 .get(BASE_URI + LOGIN_PATH)
                 .asString();
@@ -55,6 +55,4 @@ public class AuthorizationSpec {
         }
         return token;
     }
-
-
 }

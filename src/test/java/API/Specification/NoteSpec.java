@@ -17,9 +17,7 @@ public class NoteSpec {
     private RequestSpecification requestSpec;
     private ResponseSpecification responseSpec;
 
-
     public void createNoteRequestSpecification(NoteCreationDTO noteCreationDTO) {
-
         List<NoteCreationDTO> noteList = new ArrayList<>();
         noteList.add(noteCreationDTO);
         requestSpec = new RequestSpecBuilder()
@@ -33,7 +31,6 @@ public class NoteSpec {
     }
 
     public void archiveNoteRequestSpecification() {
-
         requestSpec = new RequestSpecBuilder()
                 .addHeader("Authorization", "Bearer " + AuthorizationSpec.token)
                 .setBaseUri(BASE_URI)
@@ -55,15 +52,16 @@ public class NoteSpec {
                 .then().log().all().spec(responseSpec);
 
     }
+
     public void putNotes() {
         RestAssured.given(requestSpec)
                 .put()
                 .then().log().all().spec(responseSpec);
     }
+
     public void deleteNotes() {
         RestAssured.given(requestSpec)
                 .delete()
                 .then().log().all().spec(responseSpec);
     }
-
 }

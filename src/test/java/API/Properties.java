@@ -6,6 +6,4 @@ public final class Properties {
     public static final String CREATE_NOTE = "api/users/ASSEROV/notes";
     public static final String PATH_REGISTRATION  = "api/registration";
     public static final String ARCHIVE_NOTE = "api/users/ASSEROV/notes/192";
-    public static String username = "testuser";
-    public static String password = "password123";
 }

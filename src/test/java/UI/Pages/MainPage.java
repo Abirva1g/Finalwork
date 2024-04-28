@@ -1,5 +1,7 @@
 package UI.Pages;
 
+import org.openqa.selenium.By;
+import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.support.FindBy;
@@ -7,6 +9,9 @@ import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import java.time.Duration;
+import java.util.List;
+
+import static UI.Pages.BaseTest.driver;
 
 public class MainPage {
     private WebDriverWait wait;
@@ -32,9 +37,17 @@ public class MainPage {
     @FindBy(xpath = "//*[contains(@id,'note-container')][last()]//p")
     private WebElement lastTitle;
 
+    @FindBy(xpath = "//div[contains(@id,'note-container')]")
+    private WebElement noteContainer;
+
+    @FindBy(xpath = "//*[contains(@id,'note-container')][last()]")
+    private WebElement lastNoteContainer;
+
     @FindBy(xpath = "//*[contains(@id,'note-container')][last()]//div[contains(@class,'Card_body')]")
     private WebElement lastContent;
 
+    @FindBy(xpath = "//div[contains(text(), 'Укажите название или текст заметки')]")
+    private WebElement emptyNoteText;
 
     public MainPage(WebDriver driver) {
         wait = new WebDriverWait(driver, Duration.ofSeconds(10));
@@ -42,9 +55,8 @@ public class MainPage {
 
     }
 
-
-    public void clickNewNoteButton() {
-
+    public void clickNewNoteButton() throws InterruptedException {
+        Thread.sleep(2000);
         wait.until(ExpectedConditions.visibilityOf(createNoteButton)).click();
     }
 
@@ -60,6 +72,10 @@ public class MainPage {
         wait.until(ExpectedConditions.elementToBeClickable(noteModalChangeColor)).click();
     }
 
+    public void refreshPage() {
+        driver.navigate().refresh();
+    }
+
     public void clickNoteModalColor() {
         wait.until(ExpectedConditions.elementToBeClickable( noteModalColor)).click();
     }
@@ -68,7 +84,10 @@ public class MainPage {
         wait.until(ExpectedConditions.elementToBeClickable(noteModalOkButton)).click();
     }
 
-
+    public String getNoteColor() {
+        String colorNote = driver.findElement(By.xpath("//div[contains(@id,'note-container')][last()]")).getCssValue("background-color");
+        return colorNote;
+    }
     public String getTextNote() {
         return lastTitle.getText();
     }
@@ -77,6 +96,46 @@ public class MainPage {
         return lastContent.getText();
     }
 
+    public void emptyNoteTextIsDisplayed() {
+        try {
+            emptyNoteText.isDisplayed();
+            System.out.println("Пустая заметка не может быть создана");
+        } catch (NoSuchElementException e) {
+            System.out.println("Что-то пошло не так");
+        }
+    }
+
+        private int countNote(){
+            List<WebElement> notes = driver.findElements(By.xpath("//div[contains(@id,'note-container')]"));
+            return notes.size();
+        }
+
+    public void deleteNote() {
+        int i = countNote();
+        while (i!=0) {
+            //Удаление заметки
+            driver.findElement(By.xpath("//img[contains(@id, 'note-delete-btn')]")).click();
+            driver.findElement(By.xpath("//*[@class='btn btn-primary']")).click();
+            i = countNote();
+        }
+    }
+
+    public String getLastNoteContainerText() {
+        return lastNoteContainer.getAttribute("id").substring(15);
+    }
+
+    public void editLastNote(String newNoteTitleText, String newNoteContentText) {
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.id("note-edit-btn-" + getLastNoteContainerText()))).click();
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("note-modal-title-" + getLastNoteContainerText()))).click();
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("note-modal-title-" + getLastNoteContainerText()))).clear();
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("note-modal-title-" + getLastNoteContainerText()))).sendKeys(newNoteTitleText);
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("note-modal-content-" + getLastNoteContainerText()))).click();
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("note-modal-content-" + getLastNoteContainerText()))).clear();
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("note-modal-content-" + getLastNoteContainerText()))).sendKeys(newNoteContentText);
+        wait.until(ExpectedConditions.elementToBeClickable(By.id("note-modal-save-btn-"+ getLastNoteContainerText()))).click();
+    }
+    }
 
 
-}
+
+

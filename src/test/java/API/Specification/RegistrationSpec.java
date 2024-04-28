@@ -1,6 +1,5 @@
 package API.Specification;
 
-
 import API.DTO.UserCreationDTO;
 import io.restassured.RestAssured;
 import io.restassured.builder.RequestSpecBuilder;
@@ -8,10 +7,10 @@ import io.restassured.builder.ResponseSpecBuilder;
 import io.restassured.http.ContentType;
 import io.restassured.specification.RequestSpecification;
 import io.restassured.specification.ResponseSpecification;
+import org.hamcrest.Matchers;
 
 import static API.Properties.BASE_URI;
 import static API.Properties.PATH_REGISTRATION;
-import static org.hamcrest.Matchers.equalTo;
 
 public class RegistrationSpec {
     private RequestSpecification requestSpec;
@@ -24,11 +23,13 @@ public class RegistrationSpec {
                 .setBody(userCreationDTO)
                 .build();
     }
+
     public void createResponseSpecificationRegistration (int status){
         responseSpec= new ResponseSpecBuilder()
                 .expectStatusCode(status)
                 .build();
     }
+
     public void postRegistration(){
         RestAssured.given(requestSpec).log().all()
                 .post()
@@ -39,7 +40,7 @@ public class RegistrationSpec {
         RestAssured.given(requestSpec).log().all()
                 .post()
                 .then().log().all().spec(responseSpec)
-                .body("level",equalTo("ERROR")
-                , "message",equalTo(message));
+                .body("level", Matchers.equalTo("ERROR")
+                , "message", Matchers.equalTo(message));
     }
 }
